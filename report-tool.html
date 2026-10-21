@@ -476,6 +476,10 @@
             </div>
         </header>
         
+        <div class="notice-box" style="background:#fff8e1;border-left:4px solid #ff9800;padding:14px 18px;margin:16px 0;border-radius:6px;font-size:14px;color:#6d4c13;line-height:1.7;">
+            <strong style="color:#e65100;">使用说明：</strong>大队事件汇报格式已更新，本系统已同步适配。队员可借助本系统辅助填报，生成内容可直接复制粘贴使用；正式报送前请按分工核对确认。
+        </div>
+        
         <main>
             <div class="form-section" id="form-container">
                 <h2>📝 事件信息填写</h2>
@@ -512,6 +516,8 @@
                                 <option value="A321-231">A321-231</option>
                                 <option value="A321-211">A321-211</option>
                                 <option value="A321-271">A321-271</option>
+                                <option value="A330">A330</option>
+                                <option value="A350">A350</option>
                                 <option value="其他">其他</option>
                             </select>
                         </div>
@@ -675,14 +681,40 @@
                 </div>
                 
                 <div class="form-row">
-                    <label class="required">事件简述</label>
-                    <textarea id="eventDetails" placeholder="请根据事件类型要点，详细描述事件经过、处置措施和相关细节..."></textarea>
+                    <label class="required">事件经过</label>
+                    <textarea id="eventDetails" placeholder="请按《强制报告必填要素表》要求，详细描述事件经过、处置措施和相关细节..."></textarea>
                 </div>
                 
                 <div class="form-row" id="guidanceSection">
                     <div class="guidance-box" id="eventGuidance">
-                        <p style="text-align: center; color: #666;">请选择事件类型查看填写要点</p>
+                        <p style="text-align: center; color: #666;">请选择事件类型查看强制报告必填要素</p>
                     </div>
+                </div>
+                
+                <div class="form-row">
+                    <label>是否填写机务本</label>
+                    <select id="maintenanceLog">
+                        <option value="是">是</option>
+                        <option value="否" selected>否</option>
+                        <option value="不涉及">不涉及</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label>是否报告飞行值班</label>
+                    <select id="dutyReport">
+                        <option value="是">是</option>
+                        <option value="否" selected>否</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label>是否填报SQMS</label>
+                    <select id="sqmsReport">
+                        <option value="稍后" selected>稍后</option>
+                        <option value="是">是</option>
+                        <option value="否">否</option>
+                    </select>
                 </div>
                 
                 <div class="buttons">
@@ -714,7 +746,7 @@
         <footer>
             <p><strong>二大队航空事件规范报告系统 - 离线手机版</strong></p>
             <p>无需联网使用 | 数据仅存储于设备本地 | 版本 1.3.0</p>
-            <p>完整事件类型库 | 52种规范化场景</p>
+            <p>完整事件类型库 | 69种规范化场景</p>
         </footer>
     </div>
 
@@ -733,15 +765,15 @@
             },
             {
                 id: "acas",
-                name: "ACAS（TCAS）告警",
+                name: "TCAS RA 告警",
                 points: [
                     "1.天气情况（选填）",
                     "2.飞行阶段（必填）",
-                    "3.告警触发前/期间/之后飞机的飞行动态（选填）",
+                    "3.告警触发前/期间/之后飞机的飞行动态（高度、升降率、航向、运动趋势等）（选填）",
                     "4.告警类型和持续时间（必填）",
-                    "5.告警前空管指令（如涉及）（必填）",
+                    "5.告警前空管指令（必填）",
                     "6.机组处置情况（必填）",
-                    "7.空管处置情况（选填）",
+                    "7.空管指令情况（选填）",
                     "8.飞行最高/最低高度（必填）",
                     "9.间隔情况（选填）",
                     "10.后续运行情况（必填）",
@@ -1563,7 +1595,7 @@
                 name: "加错油",
                 points: [
                     "1.事发阶段、地点（必填）",
-                    "2.加错的型号或油量（必填）",
+                    "2.加错的型号或油量（选填）",
                     "3.对飞行运行的影响（必填）",
                     "4.后续处理情况（必填）",
                     "事件经过示例：XXXX年XX月XX日机型/机号执行（起飞机场）-（目的地机场）航班，在事发阶段、地点，加错的型号或油量，对飞行运行的影响，后续处理情况。"
@@ -1689,7 +1721,7 @@
                 id: "obstruction",
                 name: "超高障碍物/升空物体",
                 points: [
-                    "1.障碍物、升空物体位置、高度（必填）",
+                    "1.障碍物、升空物体情况（必填）",
                     "2.应急处置情况（必填）",
                     "3.对安全运行的影响（必填）",
                     "4.相关天气情况（必填）",
@@ -1982,7 +2014,7 @@
             const guidanceBox = document.getElementById('eventGuidance');
             
             if (!selectedId) {
-                guidanceBox.innerHTML = '<p style="text-align: center; color: #666;">请选择事件类型查看填写指南</p>';
+                guidanceBox.innerHTML = '<p style="text-align: center; color: #666;">请选择事件类型查看强制报告必填要素</p>';
                 return;
             }
             
@@ -1995,7 +2027,7 @@
             
             let html = `
                 <div class="points-title">
-                    📋 ${eventType.name}填写要点:
+                    📋 ${eventType.name}强制报告必填要素:
                 </div>
                 <ul class="points-list">`;
             
@@ -2034,6 +2066,9 @@
             const eventType = document.getElementById('eventType');
             const eventTypeName = eventType.options[eventType.selectedIndex]?.text || '未选择';
             const eventDetails = document.getElementById('eventDetails').value || '未填写';
+            const maintenanceLog = document.getElementById('maintenanceLog').value;
+            const dutyReport = document.getElementById('dutyReport').value;
+            const sqmsReport = document.getElementById('sqmsReport').value;
             
             // 机组信息行（左座/右座始终显示，第三/第四成员填了姓名才显示）
             const leftseatLine = buildCrewLine('左座' + document.getElementById('leftseatRole').value, 'leftseat', false);
@@ -2054,7 +2089,10 @@ ${rightseatLine}`;
             if (fourthLine) report += `\n${fourthLine}`;
             report += `
 事件类型：${eventTypeName}
-事件简述：${eventDetails}
+事件经过：${eventDetails}
+是否填写机务本：${maintenanceLog}
+是否报告飞行值班：${dutyReport}
+是否填报SQMS：${sqmsReport}
 `;
             
             document.getElementById('reportOutput').textContent = report;
@@ -2120,6 +2158,9 @@ ${rightseatLine}`;
             document.getElementById('departure').value = '';
             document.getElementById('arrival').value = '';
             document.getElementById('eventDetails').value = '';
+            document.getElementById('maintenanceLog').value = '否';
+            document.getElementById('dutyReport').value = '否';
+            document.getElementById('sqmsReport').value = '稍后';
             
             // 清空机组信息
             ['leftseat', 'rightseat', 'third', 'fourth'].forEach(prefix => {
@@ -2135,7 +2176,7 @@ ${rightseatLine}`;
             setCurrentDateTime();
             
             const guidanceBox = document.getElementById('eventGuidance');
-            guidanceBox.innerHTML = '<p style="text-align: center; color: #666;">请选择事件类型查看填写要点</p>';
+            guidanceBox.innerHTML = '<p style="text-align: center; color: #666;">请选择事件类型查看强制报告必填要素</p>';
             
             showToast('表单已清空');
         }
