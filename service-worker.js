@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aviation-report-app-v1';
+const CACHE_NAME = 'aviation-report-app-v2';
 const ASSETS_TO_CACHE = [
   '.',
   'report-tool.html',
